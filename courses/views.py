@@ -65,7 +65,7 @@ class CourseModuleUpdateView(TemplateResponseMixin, View):
         self.course = get_object_or_404(Course,
                                         id=kwargs.get('pk'),
                                         owner=request.user)
-        return super().dispatch(request, *args, **kwargs)  # pk is the course id
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         formset = self.get_formset()
@@ -96,14 +96,14 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
         Form = modelform_factory(model, exclude=['owner', 'order', 'created', 'updated'])
         return Form(*args, **kwargs)
 
-    def dispatch(self, request, *args, **kwargs):
-        self.module = get_object_or_404(Module, id=kwargs.get('module_id'), course__owner=request.user)
-        self.model = self.get_model(kwargs.get('model_name'))
+    def dispatch(self, request, module_id, model_name, id=None):
+        self.module = get_object_or_404(Module, id=module_id, course__owner=request.user)
+        self.model = self.get_model(model_name)
         if id:
             self.obj = get_object_or_404(self.model,
                                          id=id,
                                          owner=request.user)
-        return super().dispatch(request, *args, **kwargs)
+        return super().dispatch(request, module_id, model_name, id)
 
     def get(self, request, module_id, model_name, id=None):
         form = self.get_form(self.model, instance=self.obj)
@@ -123,3 +123,26 @@ class ContentCreateUpdateView(TemplateResponseMixin, View):
                 Content.objects.create(module=self.module, item=obj)
             return redirect('module_content_list', self.module.id)
         return self.render_to_response({'form': form, 'object': self.obj})
+
+
+class ContentDeleteView(View):
+
+    def post(self, request, id):
+        content = get_object_or_404(Content,
+                                    id=id,
+                                    module__course__owner=request.user)
+        module = content.module
+        content.item.delete()
+        content.delete()
+        return redirect('module_content_list', module.id)
+
+
+class ModuleContentListView(TemplateResponseMixin, View):
+    template_name = 'course/manage/module/content_list.html'
+
+    def get(self, request, module_id):
+        module = get_object_or_404(Module,
+                                   id=module_id,
+                                   course__owner=request.user)
+        return self.render_to_response({'module': module})
+
