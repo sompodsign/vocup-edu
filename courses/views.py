@@ -1,5 +1,7 @@
 from django.views.generic.list import ListView
 from django.urls import reverse_lazy
+from django.db.models import Count
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import redirect, get_object_or_404
@@ -8,6 +10,7 @@ from django.forms.models import modelform_factory
 from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 from django.apps import apps
 from .forms import ModuleFormset
+from .models import Subject
 
 
 from .models import Course, Module, Content
@@ -166,3 +169,29 @@ class ContentOrderView(CsrfExemptMixin,
             Content.objects.filter(id=id,
                                    module__course__owner=request.user).update(order=order)
         return self.render_json_response({'saved': 'OK'})
+
+
+class CourseListView(TemplateResponseMixin, View):
+    model = Course
+    template_name = 'course/courses/list.html'
+
+    def get(self, request, subject=None):
+        subjects = Subject.objects.annotate(
+            total_courses=Count('courses')
+        )
+        courses = Course.objects.annotate(
+            total_modules=Count('modules')
+        )
+
+        if subject:
+            get_object_or_404(Subject, slug=subject)
+            courses = courses.filter(subject=subject)
+        return self.render_to_response({'subjects': subjects,
+                                        'subject': subject,
+                                        'courses': courses})
+
+
+class CourseDetailView(DetailView):
+    model = Course
+    template_name = 'course/detail.html'
+#TODO GET full name function set to user model
