@@ -20,7 +20,9 @@ urlpatterns = [
     path("users/", include("vocup_edu.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     path("courses/", include('courses.urls')),
-    path("", CourseListView.as_view(), name='course_list')
+    path("", CourseListView.as_view(), name='course_list'),
+
+    path("students/", include('students.urls')),
 
     # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
