@@ -184,7 +184,7 @@ class CourseListView(TemplateResponseMixin, View):
         )
 
         if subject:
-            get_object_or_404(Subject, slug=subject)
+            subject = get_object_or_404(Subject, slug=subject)
             courses = courses.filter(subject=subject)
         return self.render_to_response({'subjects': subjects,
                                         'subject': subject,
@@ -194,4 +194,3 @@ class CourseListView(TemplateResponseMixin, View):
 class CourseDetailView(DetailView):
     model = Course
     template_name = 'course/detail.html'
-#TODO GET full name function set to user model
