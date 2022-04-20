@@ -2,6 +2,7 @@
 Base settings to build other settings files upon.
 """
 from pathlib import Path
+from django.urls import reverse_lazy
 
 import environ
 
@@ -304,3 +305,5 @@ SPECTACULAR_SETTINGS = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+LOGIN_REDIRECT_URL = reverse_lazy('student_course_list')
