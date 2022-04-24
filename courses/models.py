@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.template.loader import render_to_string
 from django.contrib.contenttypes.fields import ContentType, GenericForeignKey
 from .fields import OrderField
 
 User = get_user_model()
+
 
 # Create your models here.
 class Subject(models.Model):
@@ -87,6 +89,9 @@ class ItemBase(models.Model):
 
     class Meta:
         abstract = True
+
+    def render(self):
+        return render_to_string(f'course/courses/content/{self._meta.model_name}.html', {'item': self})
 
     def __str__(self):
         return self.title

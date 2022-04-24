@@ -24,3 +24,4 @@ drf-spectacular==0.22.0  # https://github.com/tfranzel/drf-spectacular
 django-debug-toolbar
 pytest
 django-braces
+django-embed-video

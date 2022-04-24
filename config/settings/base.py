@@ -76,12 +76,14 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "drf_spectacular",
+    "embed_video",
 ]
 
 LOCAL_APPS = [
     "vocup_edu.users",
     "courses.apps.CoursesConfig",
     "students.apps.StudentsConfig",
+
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
